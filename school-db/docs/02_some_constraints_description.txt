@@ -1,0 +1,91 @@
+--Svetlana Melnik
+--Private School
+--Some Logic Constraints and Description
+--Student Data Constraints:
+--Attribute/		Constraint
+--Number of Students	20 students in total.
+--ID Format		Unique 6-digit ID, starting from 100001.
+--Status Distribution	1 student graduated, 1 student transferred, 1 student withdrawn, 1 student inactive, others: active.
+--Gender Distribution	1: 'x' (non-binary), 1: 'unknown' 4: 'm', 4: 'f'.
+--Enrollment History	19 students enrolled in grade 1 at this school; 1 transferred into grade 6.
+--Graduation Date	1 student has date_unenrolled, graduated last year.
+--Withdrawn/Transferred	Both students have date_unenrolled indicating exit from the school.
+--Inactive Student	Status is inactive, but no date_unenrolled.
+--Phone Numbers		Only grade 9+ students have cell phones.
+--Birthday Consistency	Student birthdays correspond logically with their grade level and age.
+--Address Association	Linked to person_address_id starting from 1.
+--Siblings		2 students are siblings, live with divorsed parents on different addresses
+--			3 students are siblings, live together with both parents.
+--Guardians		1 student with no guardian
+--			1 student with single guardian
+--			1 student with divorced parents, lives on two addresses with each parent
+--			1 student with non-parental guardians
+--			1 student with 'family member' guardian - grandmother 
+--			other students with 2 cohabiting guardians.
+
+
+--Guardian Data Constraints:
+--Attribute/		Constraint
+--ID Format		6-digit IDs starting with 2: 200001+.
+--Birthday		~30% of guardians do not have preset birthday = NULL.
+--Mobile Phones		All guardians have a valid cell_phone#.
+--Email			All guardians have an email.
+--Address Assignment	Each guardian has their own 4-digit person_address_id, starting from 1001.
+--Relationship		Defined in student_guardian: values like 'guardian', 'mother', 'father', 'family member', 'other'.
+--Living Situation	Shared address_id for cohabiting guardians; separate for divorced, others.
+
+
+Address & Person_Address Data Constraints:
+--Attribute/		Constraint
+--id			Unique integer identifier for each physical address (starting from 1 for students, 1001+ for guardians).
+--home_phone		Optional 10-digit phone number for the household landline (nullable).
+--house_number		Mandatory integer indicating the physical building number.
+--street			Required street name (up to 45 characters).
+--city			Required city name (up to 45 characters). Typically set to 'Ottawa'.
+--province		Canadian province abbreviation, required (2 characters, e.g., 'ON').
+--postal_code		Canadian postal code format (e.g., 'K1A0B1'), required.
+--apartment_number	Optional unit/apartment number (nullable).
+--Address		Students can have home and guardian addresses, guardians may have 'home', 'mailing', 'work', 'other' addresses.
+
+
+--COURSE ATTRIBUTES & CONSTRAINTS
+--Grade-Level Course Distribution
+--Attribute/		Constraint/Description
+--Grades 1–3:		Integrated learning structure, each grade has a single course per year
+--Grades 4–10:		Each grade includes 4 subjects per year
+--Grades 11–12:		Semester-based courses: 3 courses per semester, 2 semesters per academic year
+--Summary:		Every course must be associated with a valid department_id
+--			Every course should belong to at least one section
+--			A course might target one or more grade levels
+--Tests for Gr.1-10:	1 midterm, 2 labs, 1 final
+--Tests for Gr.11-12:	2 midterms, 1 lab, 1 final
+
+--PAYMENT MODULE
+--Attribute/		Constraint/Description
+--Discounts are applied per student invoice, not per payment
+--Standard fee		$10,000 per academic year
+--Second child 		Discount: same guardian, 2nd child from same family =10%, 3rd+ =20%
+--Children of staff	Discount = 80%
+--One student has	Discount= 50%
+--One student has	Discount = 80%
+--Payer Type/		Payment Logic
+--Full year		$10,000 for Full year paid in September by guardian
+--By semester		$5,000 * 2, in Fall and Winter, paid by guardian
+--Monthly		$833.33 *12, per month, paid by guardian
+--Monthly		$833.33 *12, per month, paid by grade 12 student personally, not guardians/parents
+--Weekly plan		$192.31 *52, per week, paid by guardian
+--Payments		Case 1: one parent pays in full
+--			Case 2: both parents split the amount 50/50
+--			Case 3: both parents split the amount 75/25
+--			Case 4: Each parent pays every other month
+--			Case 5: Unbalanced split: one parent covers the majority, the other contributes a small part
+
+--Payment Method Summary
+--Payment Type        Amount               Schedule 	Payment Method  \Coverage 
+--0      Full Year       $10,000      Once in September           card   7 students
+--1       Semester    $5,000 × 2    September + January         online   2 students
+--2        Monthly  $833.33 × 12     Each month Sep–Aug     card/check   3 students  
+--3         Weekly  $192.31 × 52         Weekly Sep–Aug           cash   2 students 
+--4  Split Payment      Variable  One-time in September          check   3 families (5 payers)
+
+                    
